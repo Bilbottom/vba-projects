@@ -1,0 +1,22 @@
+
+# Data files
+*.db
+*.xls?
+*.csv
+*.tsv
+*.txt
+
+# VBA Add-Ins
+*.xlam
+
+# Config files
+*.idea
+*.env
+
+# Images
+*.png
+*.jpg
+
+# Exceptions
+!/personal-toolkit/Personal Toolkit.xlsm
+!/personal-toolkit/personal-toolkit-ribbon.png

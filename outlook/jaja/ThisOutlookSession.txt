@@ -1,0 +1,45 @@
+Option Explicit
+
+
+' https://stackoverflow.com/a/41483071
+Private WithEvents olSharedItems As Outlook.Items
+
+
+' Needs to be re-run every time a change is made
+Private Sub Application_Startup()
+    Const bVerbose As Boolean = False
+
+    Dim olApp         As Outlook.Application
+    Dim olNs          As Outlook.NameSpace
+    Dim olRecip       As Outlook.Recipient
+
+    Set olApp = Outlook.Application
+    Set olNs = olApp.GetNamespace("MAPI")
+    Set olRecip = olNs.CreateRecipient("team@company.domain")
+
+    Set olSharedItems = olNs.GetSharedDefaultFolder(olRecip, olFolderInbox).Items
+
+    If bVerbose Then Debug.Print "Application_Startup triggered " & Now()
+End Sub
+
+
+Private Sub olSharedItems_ItemAdd(ByVal oItem As Object)
+    '''
+    ' The shared inbox deals with TMS emails.
+    '''
+    Dim olRecip       As Outlook.Recipient
+    Dim olSharedInbox As Outlook.MAPIFolder
+
+    With Application.GetNamespace("MAPI")
+        Set olRecip = .CreateRecipient("team@company.domain")
+        Set olSharedInbox = .GetSharedDefaultFolder(olRecip, olFolderInbox)
+    End With
+
+    If TypeName(oItem) = "MailItem" Then
+        If modTMS.IsMailFromTMS(oItem) _
+            Then Call modTMS.SaveAndMoveTMS(oItem, olSharedInbox)
+    End If
+
+    Set olRecip = Nothing
+    Set olSharedInbox = Nothing
+End Sub
